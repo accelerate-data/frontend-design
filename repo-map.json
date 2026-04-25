@@ -1,74 +1,68 @@
 {
-  "generated_at": "2026-04-18T00:00:00Z",
-  "repo_root": "your-plugin-name",
+  "generated_at": "2026-04-25T00:00:00Z",
+  "repo_root": "frontend-design",
   "primary_languages": ["Markdown", "JSON", "Shell", "YAML"],
-  "package_managers": [
-    {
-      "name": "npm (eval harness)",
-      "manifest": "tests/evals/package.json"
-    }
-  ],
-  "test_frameworks": [
-    {
-      "name": "promptfoo",
-      "scope": "LLM eval harness for skills owned by this repository. Run via: cd tests/evals && npm run eval"
-    }
-  ],
+  "package_managers": [],
+  "test_frameworks": [],
   "applications": [
     {
-      "name": "your-plugin-name plugin",
+      "name": "frontend-design plugin wrapper",
       "type": "shared plugin source",
-      "description": "Single plugin-source repository with Claude and Codex manifests, canonical skills under skills/, and a promptfoo eval harness under tests/evals/."
+      "description": "Accelerate Data wrapper around Anthropic's official frontend-design skill, with Claude and Codex manifests."
     }
   ],
   "modules": {
     "claude_manifest": {
       "path": ".claude-plugin/plugin.json",
-      "description": "Claude plugin manifest for this repository."
+      "description": "Claude plugin manifest for the frontend-design wrapper."
     },
     "codex_manifest": {
       "path": ".codex-plugin/plugin.json",
-      "description": "Codex plugin manifest for this repository."
+      "description": "Codex plugin manifest for the frontend-design wrapper."
     },
-    "skills": {
-      "path": "skills/",
-      "description": "Canonical skill directories. Each skill owns its SKILL.md and any supporting references, assets, scripts, or agents."
+    "frontend_design_skill": {
+      "path": "skills/frontend-design/",
+      "description": "Upstream-owned Anthropic frontend-design skill copied from plugins/frontend-design/skills/frontend-design/."
     },
-    "eval_harness": {
-      "path": "tests/evals/",
-      "description": "Promptfoo harness for skills in this repository. One package per skill under tests/evals/packages/."
+    "sync_workflow": {
+      "path": ".github/workflows/sync-upstream.yml",
+      "description": "Weekly and manual sparse upstream sync workflow that opens a pull request."
     },
     "scripts": {
       "path": "scripts/",
       "description": "Repository helper scripts. setup-worktree.sh prepares a newly created sibling worktree."
+    },
+    "docs": {
+      "path": "docs/superpowers/",
+      "description": "Local design specs and implementation plans for this wrapper repository."
     }
   },
   "key_directories": {
-    "skills/": "All skill content owned by this plugin repo",
-    "tests/evals/": "Promptfoo eval packages, prompts, assertions, and scripts for skill regression checks",
+    "skills/frontend-design/": "Upstream-owned runtime skill content",
     "scripts/": "Repository helper scripts",
     ".claude-plugin/": "Claude plugin manifest",
-    ".codex-plugin/": "Codex plugin manifest"
+    ".codex-plugin/": "Codex plugin manifest",
+    ".github/workflows/": "Repository CI and upstream sync workflows",
+    "docs/superpowers/": "Design specs and implementation plans"
   },
   "commands": {
     "setup_worktree": "./scripts/setup-worktree.sh ../worktrees/<branch-name>",
-    "eval_all": "cd tests/evals && npm run eval",
-    "eval_example_skill": "cd tests/evals && npm run eval:example-skill",
-    "eval_coverage": "cd tests/evals && npm run eval:coverage",
-    "eval_codex_compatibility": "cd tests/evals && npm run eval:codex-compatibility",
-    "eval_view": "cd tests/evals && npm run view"
+    "validate_manifests": "jq empty .claude-plugin/plugin.json && jq empty .codex-plugin/plugin.json",
+    "validate_wrapper": "jq empty .claude-plugin/plugin.json && jq empty .codex-plugin/plugin.json && test -f skills/frontend-design/SKILL.md && test ! -e skills/example-skill && test ! -e tests/evals && rg -n \"anthropics/claude-plugins-official|plugins/frontend-design|schedule\" .github/workflows/sync-upstream.yml"
   },
   "conventions": {
-    "skill_location": "All first-party skills live under skills/<skill-name>/",
-    "supporting_material": "References, assets, agents, and scripts stay inside the owning skill directory",
-    "worktrees": "Use sibling worktrees at ../worktrees/<branch-name> and run scripts/setup-worktree.sh after creation",
-    "local_dev_symlinks": "For direct local use, symlink skills/<skill-name> into ~/.claude/skills/<skill-name> and ~/.codex/skills/<skill-name>",
-    "cross_repo_dependencies": "Do not add references that require files outside this repository"
+    "skill_location": "The packaged runtime skill lives under skills/frontend-design/.",
+    "upstream_owned_content": "skills/frontend-design/ and LICENSE are synced from anthropics/claude-plugins-official/plugins/frontend-design.",
+    "wrapper_owned_content": "Plugin manifests, AGENTS.md, CLAUDE.md, README.md, repo-map.json, workflows, scripts, and docs are maintained in this wrapper repository.",
+    "upstream_edit_warning": "Warn before editing skills/frontend-design/ because local edits may diverge from future upstream syncs.",
+    "worktrees": "Use sibling worktrees at ../worktrees/<branch-name> and run scripts/setup-worktree.sh after creation.",
+    "local_dev_symlinks": "For direct local use, symlink skills/frontend-design into ~/.claude/skills/frontend-design and ~/.codex/skills/frontend-design.",
+    "marketplace_scope": "Marketplace entries belong in plugin-marketplace and should point to this wrapper repository as a URL source."
   },
   "notes_for_agents": {
-    "startup": "Read this file before exploring the repository. It is the primary startup context for structure, ownership, and eval commands.",
+    "startup": "Read this file before exploring the repository. It is the primary startup context for structure, ownership, and validation commands.",
     "marketplace_model": "This repository is a plugin source, not a marketplace. Marketplaces in other repositories should point to this repo as the plugin source.",
-    "eval_scope": "tests/evals only covers skills owned by this repository.",
-    "update_repo_map": "Refresh this file whenever manifests, skill layout, eval layout, or command references change."
+    "eval_scope": "This repository intentionally does not own local eval coverage for upstream Anthropic skill behavior.",
+    "update_repo_map": "Refresh this file whenever manifests, skill layout, sync workflow layout, validation commands, or key docs change."
   }
 }

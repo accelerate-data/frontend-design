@@ -1,0 +1,67 @@
+name: sync-upstream-frontend-design
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 10 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    name: sync upstream frontend-design skill
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout wrapper repository
+        uses: actions/checkout@v4
+
+      - name: Checkout upstream plugin sparsely
+        run: |
+          set -eu
+          git clone --depth 1 --filter=blob:none --sparse \
+            https://github.com/anthropics/claude-plugins-official.git \
+            /tmp/claude-plugins-official
+          cd /tmp/claude-plugins-official
+          git sparse-checkout set plugins/frontend-design
+
+      - name: Copy upstream-owned files
+        run: |
+          set -eu
+          rm -rf skills
+          mkdir -p skills
+          cp -R /tmp/claude-plugins-official/plugins/frontend-design/skills/. skills/
+          cp /tmp/claude-plugins-official/plugins/frontend-design/LICENSE LICENSE
+          cp /tmp/claude-plugins-official/plugins/frontend-design/README.md /tmp/upstream-frontend-design-README.md
+
+      - name: Validate wrapper integrity
+        run: |
+          set -eu
+          jq empty .claude-plugin/plugin.json
+          jq empty .codex-plugin/plugin.json
+          test -f skills/frontend-design/SKILL.md
+          test ! -e skills/example-skill
+          test ! -e tests/evals
+          grep -R "anthropics/claude-plugins-official" .github/workflows/sync-upstream.yml
+          grep -R "plugins/frontend-design" .github/workflows/sync-upstream.yml
+
+      - name: Open sync pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: automation/sync-upstream-frontend-design
+          delete-branch: true
+          commit-message: "chore: sync upstream frontend-design skill"
+          title: "chore: sync upstream frontend-design skill"
+          body: |
+            Syncs upstream-owned files from:
+
+            https://github.com/anthropics/claude-plugins-official/tree/main/plugins/frontend-design
+
+            Copied files:
+            - plugins/frontend-design/skills/ -> skills/
+            - plugins/frontend-design/LICENSE -> LICENSE
+
+            The wrapper-owned manifests, repository docs, and workflow files remain local.
+          labels: |
+            upstream-sync

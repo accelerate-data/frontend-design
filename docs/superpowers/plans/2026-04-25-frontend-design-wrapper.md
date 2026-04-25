@@ -54,7 +54,7 @@ Expected: only planned local docs may be untracked or modified before implementa
 Run:
 
 ```bash
-rg --files
+rg --files --hidden
 ```
 
 Expected output includes:
@@ -291,7 +291,7 @@ Run:
 rg -n "promptfoo|eval:example-skill|tests/evals|skill-eval-coverage" . || true
 ```
 
-Expected: matches may remain only in the design spec and implementation plan until documentation is updated in later tasks.
+Expected: matches may remain in the design spec, implementation plan, template README/AGENTS/repo-map guidance that Task 6 updates, and `scripts/setup-worktree.sh` skip logic. No package manifest or eval harness file should remain because `tests/evals/` is removed.
 
 - [ ] **Step 3: Commit eval removal**
 
@@ -403,7 +403,7 @@ Run:
 rg -n "push origin main|git push origin main" .github/workflows/sync-upstream.yml || true
 ```
 
-Expected: no output.
+Expected: no output for template instructions. Validation references to `skills/example-skill` being absent are allowed.
 
 - [ ] **Step 4: Commit sync workflow**
 

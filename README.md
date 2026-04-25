@@ -1,89 +1,82 @@
-# Your Plugin Name
+# frontend-design
 
-> **Template repo** — rename this, update the manifests, replace the example skill, and go.
+Accelerate Data wrapper repository for Anthropic's official `frontend-design` skill.
 
-Plugin repository for [describe what this plugin does] skills used by Claude Code and Codex.
+This repository is a single plugin source repo, not a marketplace repo. It packages the upstream skill as ordinary plugin files so Claude and Codex marketplaces can install the same whole-repo source.
 
-This repository is a single plugin source repo, not a marketplace repo.
+## Upstream Source
 
-- Claude and Codex marketplaces should point to this repo as the plugin source.
-- The canonical skill content lives in [`skills/`](./skills).
-
-## Getting Started
-
-1. **Rename** — update `name`, `description`, `repository` in `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json`.
-2. **Replace the example skill** — edit or replace `skills/example-skill/` with your first real skill.
-3. **Update evals** — rename `tests/evals/packages/example-skill/` to match, update the prompt and assertions.
-4. **Update `skill-eval-coverage-baseline.json`** — list any skills that intentionally have no eval package yet.
-5. **Update `AGENTS.md`** — update the Skills section to list your real skills.
-6. **Update `repo-map.json`** — reflect your actual skill names and eval commands.
-
-## Layout
+The runtime skill content is sourced from Anthropic's official plugin repository:
 
 ```text
-.
-├── .claude-plugin/plugin.json      # Claude plugin manifest
-├── .codex-plugin/plugin.json       # Codex plugin manifest
-├── skills/
-│   └── example-skill/              # Replace with your skills
-│       └── SKILL.md
-├── tests/evals/
-│   ├── packages/example-skill/     # One eval package per skill
-│   ├── prompts/                    # Eval prompts
-│   ├── assertions/                 # Shared assertion helpers
-│   └── scripts/                   # Eval runner scripts
-└── README.md
+https://github.com/anthropics/claude-plugins-official/tree/main/plugins/frontend-design
 ```
 
-## Use In Claude
+Synced upstream-owned files:
 
-Install through a Claude plugin marketplace pointing to this repo, or symlink locally:
+- `skills/frontend-design/`
+- `LICENSE`
+
+Wrapper-owned files:
+
+- `.claude-plugin/plugin.json`
+- `.codex-plugin/plugin.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `README.md`
+- `repo-map.json`
+- `.github/workflows/sync-upstream.yml`
+- local design and plan docs
+
+## Marketplace Source
+
+Marketplace entries should point at this wrapper repository as a whole-repo URL source:
+
+```json
+{
+  "source": "url",
+  "url": "https://github.com/accelerate-data/frontend-design.git"
+}
+```
+
+Do not point Codex directly at Anthropic's upstream plugin path; the upstream plugin does not provide `.codex-plugin/plugin.json`.
+
+## Local Development
+
+For direct local use without a marketplace, symlink the skill directory:
 
 ```bash
-mkdir -p ~/.claude/skills
+mkdir -p ~/.claude/skills ~/.codex/skills
 
-ln -s /absolute/path/to/your-plugin/skills/your-skill-name \
-  ~/.claude/skills/your-skill-name
+ln -s /absolute/path/to/frontend-design/skills/frontend-design \
+  ~/.claude/skills/frontend-design
+
+ln -s /absolute/path/to/frontend-design/skills/frontend-design \
+  ~/.codex/skills/frontend-design
 ```
 
-Enable the pre-commit hook:
+Enable the repo-managed pre-commit hook:
 
 ```bash
 git config core.hooksPath .githooks
 chmod +x .githooks/pre-commit
 ```
 
-## Use In Codex
+## Upstream Sync
 
-Install through a Codex plugin marketplace pointing to this repo, or symlink locally:
+The `sync-upstream-frontend-design` workflow runs weekly and can be dispatched manually. It sparse-checkouts `plugins/frontend-design` from `anthropics/claude-plugins-official`, copies upstream-owned runtime files into this wrapper repo, validates wrapper integrity, and opens a pull request for review.
 
-```bash
-mkdir -p ~/.codex/skills
+The workflow must not push directly to `main`.
 
-ln -s /absolute/path/to/your-plugin/skills/your-skill-name \
-  ~/.codex/skills/your-skill-name
-```
+## Validation
 
-## Eval Harness
-
-Promptfoo evals live under [`tests/evals/`](./tests/evals).
+Run these checks before opening or updating a pull request:
 
 ```bash
-cd tests/evals
-npm install
-npm run eval
+jq empty .claude-plugin/plugin.json
+jq empty .codex-plugin/plugin.json
+test -f skills/frontend-design/SKILL.md
+test ! -e skills/example-skill
+test ! -e tests/evals
+rg -n "anthropics/claude-plugins-official|plugins/frontend-design|schedule" .github/workflows/sync-upstream.yml
 ```
-
-Individual skill suite:
-
-```bash
-cd tests/evals
-npm run eval:example-skill
-```
-
-## Development Notes
-
-- Keep all skill directories under `skills/`.
-- Keep skill assets, references, and scripts inside the owning skill directory.
-- Avoid cross-repo relative paths — a plugin install is expected to be self-contained.
-- Bump the version in `.claude-plugin/plugin.json` with every PR (enforced by CI).
