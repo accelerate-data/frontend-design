@@ -1,20 +1,24 @@
 {
-  "name": "your-plugin-name",
-  "description": "Short description of what this plugin provides.",
+  "name": "frontend-design",
+  "description": "Frontend design skill for production UI and UX implementation.",
   "author": {
     "name": "Accelerate Data"
   },
-  "repository": "https://github.com/accelerate-data/your-plugin-name",
-  "license": "MIT",
+  "repository": "https://github.com/accelerate-data/frontend-design",
+  "license": "See LICENSE",
   "keywords": [
     "skills",
     "codex",
-    "claude-code"
+    "claude-code",
+    "frontend",
+    "design",
+    "ui",
+    "ux"
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Your Plugin Name",
-    "shortDescription": "Short description of what this plugin provides.",
+    "displayName": "Frontend Design",
+    "shortDescription": "Production frontend design guidance for UI and UX implementation.",
     "developerName": "Accelerate Data",
     "category": "Coding",
     "capabilities": [],
