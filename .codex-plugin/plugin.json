@@ -20,8 +20,10 @@
     "displayName": "Frontend Design",
     "shortDescription": "Production frontend design guidance for UI and UX implementation.",
     "developerName": "Accelerate Data",
-    "category": "Coding",
+    "category": "Developer Tools",
     "capabilities": [],
-    "screenshots": []
-  }
+    "screenshots": [],
+    "longDescription": "Frontend design skill for production UI and UX implementation."
+  },
+  "version": "0.1.2"
 }
